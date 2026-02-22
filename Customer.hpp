@@ -9,13 +9,14 @@
 #define CUSTOMER_HPP
 
 class Customer {
-    public: 
+    private:
     double arrivalTime;
     double startOfServiceTime;
     double departureTime;
     double pqTime;
     Customer* nextCust; 
  
+    public: 
     Customer(double time) { //initial constructor
         arrivalTime = time;
         startOfServiceTime = 0;
