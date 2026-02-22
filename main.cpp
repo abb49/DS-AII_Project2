@@ -1,3 +1,10 @@
+/************************************
+ * Student Name: Atiye Buker
+ * File Name: main.cpp
+ * Project 2
+ * 
+ * Purpose: run  the simulation
+ ************************************/
 #include "Customer.hpp"
 #include<iostream>
 #include<string>
@@ -12,6 +19,7 @@
 
 using namespace std;
 
+//to get random intervals for arrival and service time
 double getInterval(int avg) {
     double r = 0.0;
     while(r == 0.0) { //to make sure r is not 0
@@ -21,6 +29,7 @@ double getInterval(int avg) {
     return interval;
 }
 
+//factorial to get analytical values
 long long factorial(int n) {
     if(n == 0 || n == 1) {
         return 1;
@@ -32,6 +41,7 @@ long long factorial(int n) {
     return fact;
 }
 
+//print out the analytical values for comparison
 void printAnalytical(double lambda, double mu, double M) {
     double sum = 0;
     for(int i = 0; i < M; ++i) {
@@ -87,6 +97,7 @@ int main() {
         return 1;
     }
 
+    //read in all values
     getline(iss, currIn);
     lambda = stoi(currIn);
     getline(iss, currIn);
@@ -97,7 +108,7 @@ int main() {
     getline(iss, currIn);
     eventCount = stoi(currIn);
 
-    int totalCustomer = eventCount/2;
+    int totalCustomer = eventCount/2; //(since every customer has two events (arrival and departure))
 
     iss.close();
 
@@ -113,12 +124,13 @@ int main() {
 
     int customersGenerated = 200;
 
+    //actual event processing until queue is empty/we reach total customers
     while(!events.empty()) {
         currEvent = events.top();
         events.pop();
 
         if((events.size() <= M + 1) && (customersGenerated < totalCustomer)) {
-            while((events.size() < 200) && (customersGenerated < totalCustomer)) {
+            while((events.size() < 200) && (customersGenerated < totalCustomer)) { //check if we need more arrival events to be added
                 Customer arrival(lastArrival + getInterval(lambda));
                 arrival.setDepartureTime(-1.0);
                 arrival.setPqTime(arrival.getArrival());
@@ -129,21 +141,21 @@ int main() {
         }
 
         if(currEvent.getDeparture() < 0.0) { //is an arrival event
-            if(M > 0) {
+            if(M > 0) { //servers available
                 --M;
                 currEvent.setStartService(currEvent.getArrival());
                 double interval = getInterval(mu);
                 currEvent.setDepartureTime(currEvent.getArrival() + interval);
                 currEvent.setPqTime(currEvent.getDeparture());
                 events.push(currEvent);
-            } else {
+            } else { //not available, so needs to wait
                 waiting.push(currEvent);
             }
         } else { //departure event
             ++M;
             timeWaited += (currEvent.getStartofService() - currEvent.getArrival());
             timeService += (currEvent.getDeparture() - currEvent.getStartofService());
-            if(!waiting.empty()) {
+            if(!waiting.empty()) { //people waiting
                 Customer nextCustomer = waiting.front();
                 waiting.pop();
                 nextCustomer.setStartService(currEvent.getDeparture());
@@ -164,6 +176,7 @@ int main() {
 
     }
 
+    //calculate simulation values
     double Po = idleTime / currEvent.getDeparture();
     double W = ((timeWaited + timeService)/customersGenerated);
     double Wq = timeWaited/customersGenerated;
@@ -178,7 +191,7 @@ int main() {
     cout << "Rho:" << Rho << endl << endl;
 
 
-    // ------------------- TEST 2 -------------------
+    // ------------------- TEST 2 ------------------- all the same stuff as test 1, just read from a different file
     //both queues should be empty, but we must clear out the values and read in the new averages
 
     timeWaited = 0.0;
