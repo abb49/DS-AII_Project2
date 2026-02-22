@@ -48,7 +48,7 @@ class Customer {
         return startOfServiceTime;
     }
 
-    double operator>(const Customer& other) const {
+    bool operator>(const Customer& other) const {
         return this->pqTime > other.pqTime;
     }
 };
