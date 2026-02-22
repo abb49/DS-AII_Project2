@@ -11,4 +11,3 @@ main.o : Customer.hpp
 
 clean: 
 	rm -f *.o
-	rm p
